@@ -1,47 +1,153 @@
 locals {
- ports = ["80/80", "443/443", "22/22", "3389/3389"]
+  names = [
+    "balancetrans",
+    "ifclimitcenter",
+    "timeoutcenter",
+    "isdchecklite",
+    "ifcriskmatrix",
+    "ifccfpcenter",
+    "ifccfmng",
+    "ifcprodmng",
+    "ifcprocess",
+    "ifccomparacenter",
+    "ifcbuservice",
+    "ifcaccenter",
+    "ifcriskcentermng",
+    "ifcrecon",
+    "ifcinnertrans",
+    "approdcenter",
+    "ifcdebittrans",
+    "ifcamlmatrix",
+    "ifcamlcloud",
+    "ifctscenter",
+    "ifcdart",
+    "cardissuancecenter",
+    "ifcfeecharge",
+    "datacenter",
+    "apintegrationprod",
+    "bizcenter",
+    "apmobileappng",
+    "rppconnector",
+    "msgcenter",
+    "merchantcenter",
+    "lmacis",
+    "fincenter",
+    "ifcdatabus",
+    "ifcvouchercore",
+    "ifcriskcloud",
+    "apacquirecenter",
+    "ifcassetflux",
+    "ifcgotone",
+    "ifccustmng",
+    "ifccustcenter",
+    "ifccardcenter",
+    "ifcsupergw",
+    "apmobilewallet",
+    "ifcfluxnet",
+    "apbizprod",
+    "apcashier",
+    "ifcfluxbatch",
+    "apfundprod",
+    "apfundcenter",
+    "appaymentmng",
+    "ifcfluxworks",
+    "ifcfluxconf",
+    "appromotion",
+    "appromocore",
+    "apmobileprod",
+    "apsettlement",
+    "appromomng"
+  ]
+  types = [
+    "ecs.t6-c1m1.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large",
+    "ecs.t6-c1m2.large"
+  ]
+
 }
 
 
+resource "alicloud_instance" "instance" {
+  count                      = length(local.names)
+  availability_zone          = "ap-southeast-3a"
+  security_groups            = ["sg-8ps6bxs3pjtaysyphgfg"]
+  vpc_id                     = "vpc-8psvygid5d9s946rhsb24"
+  image_id                   = "m-8pscspjr75ey9xvrga4s"
 
-resource "alicloud_vpc" "default" {
-    vpc_name    = "vpc-${var.name}"
-    cidr_block  = "192.168.0.0/16"
+  instance_type              = local.types[count.index]
+  instance_name              = "dev3-${local.names[count.index]}-A-1"
+  system_disk_name           = "dev3-${local.names[count.index]}-disk"
+  host_name                  = "dev3-${local.names[count.index]}-A-1"
+
+  system_disk_category       = "cloud_essd"
+  system_disk_size           = 100
+  instance_charge_type       = "PrePaid"
+  renewal_status             = "AutoRenewal"
+  resource_group_id          = "rg-aek3v75abaspmzi"
+
+  tags = {
+      "container" = "cto",
+      "owner"  = "devops",
+      "environment" = "dev3",
+      "appname" = local.names[count.index]
+  }
 }
 
-data "alicloud_zones" "default" {
 
-}
-
-resource "alicloud_vswitch" "default" {
-  vpc_id        = alicloud_vpc.default.id
-  cidr_block    = "192.168.0.0/24"
-  zone_id       = data.alicloud_zones.default.zones.1.id
-  vswitch_name  = "vsw-${var.name}-a"
-}
-
-resource "alicloud_security_group" "default" {
-  name          = "sg-${var.name}"
-  vpc_id        = alicloud_vpc.default.id
-}
-
-resource "alicloud_security_group_rule" "allow_http_tcp" {
-  count             = length(local.ports)
-  type              = "ingress"
-  ip_protocol       = "tcp"
-  nic_type          = "intranet"
-  policy            = "accept"
-  port_range        = local.ports[count.index]
-  priority          = 1
-  security_group_id = alicloud_security_group.default.id
-  cidr_ip           = "0.0.0.0/0"
-}
-
-resource "alicloud_eip" "default" {
-  bandwidth            = "10"
-  internet_charge_type = "PayByTraffic"
-}
-
-output "vpc" {
-  value = alicloud_vpc.default.id
+output "ecs" {
+  value = alicloud_instance.instance.*.id
 }

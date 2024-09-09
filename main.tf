@@ -120,12 +120,17 @@ locals {
 
 }
 
+data "alicloud_vswitches" "default" {
+  vpc_id                     = "vpc-8psvygid5d9s946rhsb24"
+  zone_id                    = "ap-southeast-3a"
+}
 
 resource "alicloud_instance" "instance" {
   count                      = length(local.names)
   availability_zone          = "ap-southeast-3a"
   security_groups            = ["sg-8ps6bxs3pjtaysyphgfg"]
   vpc_id                     = "vpc-8psvygid5d9s946rhsb24"
+  vswitch_id                 = data.alicloud_vswitches.default.vswitches.0.id 
   image_id                   = "m-8pscspjr75ey9xvrga4s"
 
   instance_type              = local.types[count.index]
@@ -133,14 +138,20 @@ resource "alicloud_instance" "instance" {
   system_disk_name           = "dev3-${local.names[count.index]}-disk"
   host_name                  = "dev3-${local.names[count.index]}-A-1"
 
-  system_disk_category       = "cloud_essd"
   system_disk_size           = 100
   instance_charge_type       = "PrePaid"
   renewal_status             = "AutoRenewal"
+  period                     = 1
   resource_group_id          = "rg-aek3v75abaspmzi"
 
+  volume_tags = {
+      "costcenter" = "cto",
+      "owner"  = "devops",
+      "environment" = "dev3",
+      "appname" = local.names[count.index]
+  }
   tags = {
-      "container" = "cto",
+      "costcenter" = "cto",
       "owner"  = "devops",
       "environment" = "dev3",
       "appname" = local.names[count.index]
